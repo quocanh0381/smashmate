@@ -1,0 +1,2083 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SmashMate - Siêu ứng dụng Cầu Lông Thế Hệ Mới</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons & Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tone.js for game sounds -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <style>
+        body {
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          -webkit-tap-highlight-color: transparent;
+          user-select: none;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        /* Mobile frame container shadow */
+        .mobile-shell {
+          max-width: 425px;
+          height: 880px;
+          max-height: 94vh;
+          border-radius: 42px;
+          box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.4), 0 0 0 10px #1e293b;
+        }
+        @media (max-width: 640px) {
+          .mobile-shell {
+            max-width: 100%;
+            height: 100vh;
+            max-height: 100vh;
+            border-radius: 0;
+            box-shadow: none;
+          }
+        }
+        .court-mat {
+          background: radial-gradient(circle, #059669 0%, #047857 100%);
+          box-shadow: inset 0 0 30px rgba(0,0,0,0.25);
+        }
+        /* Pulse glow */
+        .badge-glow {
+          box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-0 sm:p-4">
+
+<div class="mobile-shell w-full bg-slate-900 overflow-hidden flex flex-col relative border border-slate-800">
+
+    <!-- Top Mobile Header / Status Bar -->
+    <header class="bg-slate-900/95 backdrop-blur-md px-5 pt-3 pb-3 border-b border-slate-800/80 sticky top-0 z-30">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2.5">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                    <i class="fa-solid fa-feather text-white text-base"></i>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-1.5">
+                        <h1 class="text-base font-bold tracking-tight text-white">SmashMate</h1>
+                        <span class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">VN</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 flex items-center gap-1">
+                        <i class="fa-solid fa-location-dot text-emerald-400 text-[10px]"></i>
+                        <span id="headerLocation">TP. Hồ Chí Minh</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Trust Score Indicator (Anti-Bùng Kèo Pill) -->
+            <div class="flex items-center bg-slate-800 hover:bg-slate-750 px-2.5 py-1.5 rounded-full border border-slate-700/80 cursor-pointer transition" onclick="openTrustModal()">
+                <div class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse mr-1.5"></div>
+                <div class="text-right">
+                    <span class="text-[10px] block text-slate-400 leading-none">Uy tín</span>
+                    <span class="text-xs font-bold text-emerald-400 leading-none">98<span class="text-[9px] text-slate-400">/100</span></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 overflow-y-auto hide-scrollbar pb-24" id="mainContainer">
+
+        <!-- ================= TAB 1: GHÉP KÈO (ANTI-BÙNG) [ĐÃ ẨN THEO YÊU CẦU] ================= -->
+        <section id="tab-matches" class="p-4 space-y-4 hidden">
+            <!-- Banner Solution: Giải quyết vấn nạn bùng kèo -->
+            <div class="bg-gradient-to-r from-emerald-950/60 via-slate-800 to-teal-950/50 p-3.5 rounded-2xl border border-emerald-500/30 relative overflow-hidden">
+                <div class="flex items-start justify-between">
+                    <div class="space-y-1 z-10 max-w-[78%]">
+              <span class="text-[10px] font-bold tracking-wider uppercase text-emerald-400 bg-emerald-900/60 px-2 py-0.5 rounded-md border border-emerald-500/40">
+                Cam kết Không Bùng Kèo
+              </span>
+                        <h3 class="text-sm font-bold text-white mt-1">Ghép cặp có Bảo chứng Uy Tín</h3>
+                        <p class="text-[11px] text-slate-300">Tất cả người chơi đều cọc giữ slot hoặc đạt Trust Score &gt; 80. Hoàn tiền nếu chủ kèo hủy.</p>
+                    </div>
+                    <div class="w-11 h-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xl">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Chips -->
+            <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar py-1">
+                <button onclick="filterMatches('all')" class="filter-btn active whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-500 text-slate-950">Tất cả kèo (4)</button>
+                <button onclick="filterMatches('intermediate')" class="filter-btn whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700">Trình độ TB (2)</button>
+                <button onclick="filterMatches('advanced')" class="filter-btn whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700">Khá / Nâng cao</button>
+                <button onclick="filterMatches('near')" class="filter-btn whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700">Gần bạn (&lt;3km)</button>
+            </div>
+
+            <!-- Action bar -->
+            <div class="flex items-center justify-between pt-1">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Kèo mở hôm nay</h2>
+                <button onclick="openCreateMatchModal()" class="text-xs font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+                    <i class="fa-solid fa-plus text-[10px]"></i> Đăng tìm slot
+                </button>
+            </div>
+
+            <!-- Match Cards Container -->
+            <div class="space-y-3" id="matchListContainer">
+                <!-- Rendered dynamically by JS -->
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: ĐẶT SÂN TỨC THÌ (REAL-TIME COURT) ================= -->
+        <section id="tab-courts" class="p-4 space-y-4 hidden">
+            <!-- Header info -->
+            <div class="bg-slate-800/80 rounded-2xl p-4 border border-slate-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Hệ Thống Trực Tuyến</span>
+                        <h2 class="text-sm font-bold text-white">Sân Cầu Lông Đào Duy Anh (Sân 1 - 4)</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">21 Đào Duy Anh, P.9, Phú Nhuận • Thảm BWF</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs text-slate-400 block">Đơn giá</span>
+                        <span class="text-sm font-bold text-emerald-400">90k<span class="text-[10px] text-slate-400">/h</span></span>
+                    </div>
+                </div>
+
+                <!-- Date Picker Horizonal -->
+                <div class="flex gap-2 mt-3 pt-3 border-t border-slate-700/60 overflow-x-auto hide-scrollbar">
+                    <div class="px-3 py-1.5 rounded-xl bg-emerald-500 text-slate-950 text-center min-w-[58px] cursor-pointer">
+                        <span class="text-[9px] block uppercase font-bold">Hôm nay</span>
+                        <span class="text-xs font-extrabold">29 Th9</span>
+                    </div>
+                    <div class="px-3 py-1.5 rounded-xl bg-slate-750 text-slate-300 text-center min-w-[58px] cursor-pointer hover:bg-slate-700 border border-slate-700">
+                        <span class="text-[9px] block text-slate-400">T.Tư</span>
+                        <span class="text-xs font-bold">30 Th9</span>
+                    </div>
+                    <div class="px-3 py-1.5 rounded-xl bg-slate-750 text-slate-300 text-center min-w-[58px] cursor-pointer hover:bg-slate-700 border border-slate-700">
+                        <span class="text-[9px] block text-slate-400">T.Năm</span>
+                        <span class="text-xs font-bold">01 Th10</span>
+                    </div>
+                    <div class="px-3 py-1.5 rounded-xl bg-slate-750 text-slate-300 text-center min-w-[58px] cursor-pointer hover:bg-slate-700 border border-slate-700">
+                        <span class="text-[9px] block text-slate-400">T.Sáu</span>
+                        <span class="text-xs font-bold">02 Th10</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="flex items-center justify-between text-[11px] px-1 text-slate-400">
+                <div class="flex items-center gap-1.5">
+                    <span class="w-3 h-3 rounded-md bg-slate-800 border border-slate-700"></span> Trống
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="w-3 h-3 rounded-md bg-amber-500/30 border border-amber-500"></span> Đang giữ (3p)
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="w-3 h-3 rounded-md bg-red-950/60 border border-red-800/80 text-red-500 text-[9px] flex items-center justify-center font-bold">✕</span> Kín
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="w-3 h-3 rounded-md bg-emerald-500 text-slate-950 font-bold flex items-center justify-center text-[9px]">✓</span> Đang chọn
+                </div>
+            </div>
+
+            <!-- Court Slot Grid Matrix -->
+            <div class="space-y-3" id="courtMatrixContainer">
+                <!-- Generated via JS -->
+            </div>
+
+            <!-- Booking Bottom Action Card (Sticky within court tab) -->
+            <div id="bookingSummaryCard" class="bg-gradient-to-t from-slate-900 to-slate-850 p-4 rounded-2xl border border-slate-700 shadow-xl space-y-3">
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-slate-400">Khung giờ đã chọn:</span>
+                    <span id="selectedSlotsLabel" class="font-bold text-white">Chưa chọn khung giờ</span>
+                </div>
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-slate-400">Tạm tính tiền cọc (50%):</span>
+                    <span id="selectedPriceLabel" class="font-bold text-emerald-400 text-sm">0 đ</span>
+                </div>
+                <button id="btnHoldCourt" onclick="handleCourtBooking()" disabled class="w-full py-3 rounded-xl bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-600 text-slate-950 font-bold text-xs uppercase tracking-wider transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20">
+                    <i class="fa-solid fa-lock"></i> Giữ Chỗ & Xác Nhận Cọc (Chống Trùng Sân)
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: CHIA TIỀN TỰ ĐỘNG (SMART SPLIT BILL & VIETQR) ================= -->
+        <section id="tab-split" class="p-4 space-y-4">
+            <!-- Title & Quick Presets -->
+            <div class="bg-slate-800/70 p-4 rounded-2xl border border-slate-700">
+                <div class="flex items-center justify-between mb-2">
+                    <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-receipt text-emerald-400"></i> Tính Tiền Sân Tự Động
+                    </h2>
+                    <button onclick="openBankConfigModal()" class="text-[11px] bg-slate-900/90 hover:bg-slate-750 text-emerald-300 border border-emerald-500/40 px-2.5 py-1 rounded-xl font-semibold flex items-center gap-1.5 transition shadow-sm" title="Nhấn để đổi STK nhận tiền">
+                        <i class="fa-solid fa-building-columns text-[10px] text-emerald-400"></i>
+                        <span id="bankBadgePreview">MB Bank •••456</span>
+                        <i class="fa-solid fa-pen text-[9px] text-slate-400"></i>
+                    </button>
+                </div>
+                <p class="text-xs text-slate-400">Cộng gộp tiền giờ chơi + ống cầu + nước ngọt, chia đều theo người thực tế check-in.</p>
+            </div>
+
+            <!-- Expense Inputs Form -->
+            <div class="bg-slate-850 p-4 rounded-2xl border border-slate-800 space-y-3">
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div>
+                        <label class="text-[11px] text-slate-400 block mb-1">Tiền sân (giờ)</label>
+                        <div class="relative">
+                            <input type="number" id="inputCourtFee" value="180000" step="10000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-emerald-500" oninput="calculateBill()">
+                            <span class="absolute right-2.5 top-2 text-[11px] text-slate-500">đ</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-slate-400 block mb-1">Cầu tiêu hao (ống/quả)</label>
+                        <div class="relative">
+                            <input type="number" id="inputShuttleFee" value="120000" step="5000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-emerald-500" oninput="calculateBill()">
+                            <span class="absolute right-2.5 top-2 text-[11px] text-slate-500">đ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-[11px] text-slate-400 block mb-1">Nước uống & tiện ích khác</label>
+                    <div class="relative">
+                        <input type="number" id="inputDrinksFee" value="40000" step="5000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-emerald-500" oninput="calculateBill()">
+                        <span class="absolute right-2.5 top-2 text-[11px] text-slate-500">đ</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-2 border-t border-slate-800 text-xs">
+                    <span class="text-slate-400 font-medium">Tổng hóa đơn buổi đánh:</span>
+                    <span id="totalBillDisplay" class="text-base font-extrabold text-emerald-400">340.000 đ</span>
+                </div>
+            </div>
+
+            <!-- DIRECT QR PAYMENT CARD WITH CUSTOM IMAGE UPLOAD & DATE NOTE -->
+            <div class="bg-gradient-to-br from-slate-850 via-slate-900 to-emerald-950/40 p-4 rounded-2xl border border-emerald-500/30 shadow-xl space-y-3.5">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm">
+                            <i class="fa-solid fa-qrcode"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xs font-bold text-white">Mã QR Thanh Toán Tiền Sân</h3>
+                            <span id="qrSourceTypeBadge" class="text-[10px] text-emerald-400 font-medium">VietQR Tự Động Theo Số Tiền</span>
+                        </div>
+                    </div>
+
+                    <!-- Upload Custom QR or Switch mode -->
+                    <div class="flex items-center gap-1.5">
+                        <input type="file" id="customQrFileInput" accept="image/*" class="hidden" onchange="handleQrImageUpload(event)">
+                        <button onclick="document.getElementById('customQrFileInput').click()" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700 text-[11px] font-medium flex items-center gap-1 transition" title="Tải ảnh mã QR của bạn lên">
+                            <i class="fa-solid fa-camera text-emerald-400 text-[10px]"></i>
+                            <span id="btnUploadQrText">Thêm ảnh QR</span>
+                        </button>
+                        <button id="btnRemoveCustomQr" onclick="removeCustomQrImage()" class="w-7 h-7 rounded-xl bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-800/40 text-xs flex items-center justify-center transition hidden" title="Xóa ảnh QR tự tải để dùng VietQR tạo sẵn">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Embedded QR Image Display Box -->
+                <div class="flex flex-col items-center justify-center py-2 bg-slate-950/70 rounded-2xl border border-slate-800/80 relative">
+                    <div class="bg-white p-3 rounded-2xl shadow-xl relative inline-block">
+                        <img id="inlineQrImage" src="" alt="Mã QR Chuyển Tiền" class="w-44 h-44 object-contain rounded-lg">
+                        <div id="customQrWatermark" class="hidden absolute bottom-4 left-1/2 -translate-x-1/2 bg-slate-950/90 text-emerald-400 text-[9px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/40 whitespace-nowrap shadow">
+                            Ảnh QR Tự Đăng
+                        </div>
+                    </div>
+
+                    <!-- Share Amount & Default Date Note -->
+                    <div class="w-full px-4 pt-3 space-y-1.5 text-center">
+                        <div class="text-[11px] text-slate-400">Mỗi người cần chuyển khoản:</div>
+                        <div id="inlinePerPersonShare" class="text-2xl font-black text-emerald-400 tracking-tight">85.000 đ</div>
+
+                        <!-- Default Note Container: TIEN SAN + DD/MM/YYYY -->
+                        <div class="mt-2 bg-slate-900/90 border border-slate-700/80 rounded-xl p-2.5 flex items-center justify-between text-left">
+                            <div class="overflow-hidden pr-2">
+                                <span class="text-[10px] text-slate-400 block font-medium">Nội dung CK mặc định:</span>
+                                <span id="defaultDateTransferNote" class="text-xs font-bold text-white font-mono block truncate">
+                    TIEN SAN 29/09/2026
+                  </span>
+                            </div>
+                            <button onclick="copySpecificText('defaultDateTransferNote', 'Đã sao chép nội dung chuyển khoản!')" class="shrink-0 px-2.5 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/40 text-[10px] font-bold flex items-center gap-1 transition">
+                                <i class="fa-solid fa-copy"></i> Chép ND
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom quick actions -->
+                <div class="flex gap-2">
+                    <button onclick="copyReminderText()" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition">
+                        <i class="fa-solid fa-comments text-emerald-400"></i> Nhắc Nhóm Zalo
+                    </button>
+                    <button onclick="markAllPaid()" class="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition shadow-md shadow-emerald-500/20">
+                        Đã Thu Đủ
+                    </button>
+                </div>
+            </div>
+
+            <!-- Participants Check-in List -->
+            <div class="bg-slate-850 p-4 rounded-2xl border border-slate-800 space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Người có mặt (<span id="activePlayerCount">4</span>)</h3>
+                    <button onclick="addParticipantPrompt()" class="text-[11px] text-emerald-400 font-semibold hover:underline">+ Thêm người</button>
+                </div>
+
+                <div id="participantsList" class="space-y-2">
+                    <!-- Rendered by JS -->
+                </div>
+
+                <!-- Per-person share banner -->
+                <div class="bg-emerald-950/40 border border-emerald-500/30 rounded-xl p-3 flex items-center justify-between">
+                    <div>
+                        <span class="text-[11px] text-emerald-300 block">Mỗi người thanh toán</span>
+                        <span id="perPersonShareDisplay" class="text-lg font-black text-emerald-400">85.000 đ</span>
+                    </div>
+                    <button onclick="generateVietQrModal()" class="px-3.5 py-2 rounded-xl bg-emerald-500 text-slate-950 text-xs font-bold hover:bg-emerald-400 flex items-center gap-1.5 shadow-md shadow-emerald-500/20">
+                        <i class="fa-solid fa-expand"></i> Phóng to QR
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB: GIAO DIỆN USER / VỢT THỦ ================= -->
+        <section id="tab-user" class="p-4 space-y-4 hidden">
+            <!-- User Identity Selector Bar -->
+            <div class="bg-gradient-to-r from-slate-850 to-slate-900 p-3.5 rounded-2xl border border-slate-700/80 flex items-center justify-between shadow-sm">
+                <div class="flex items-center gap-2.5">
+                    <div id="userAvatarBadge" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-500 text-white font-black text-sm flex items-center justify-center shadow-md shadow-sky-500/20">
+                        TL
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-medium">Bạn đang xem với tư cách:</span>
+                        <div class="relative">
+                            <select id="userProfileSelect" onchange="changeCurrentActiveUser(this.value)" class="bg-transparent text-xs font-bold text-white pr-4 focus:outline-none cursor-pointer">
+                                <!-- Rendered dynamically -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="text-[10px] text-slate-400 block font-medium">Trạng thái</span>
+                    <span id="userPaymentStatusPill" class="text-[11px] font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/30">
+              Chưa Chuyển
+            </span>
+                </div>
+            </div>
+
+            <!-- Personal Bill & QR Payment Action Card -->
+            <div class="bg-gradient-to-br from-slate-850 via-slate-900 to-emerald-950/30 p-4 rounded-3xl border border-emerald-500/30 shadow-xl space-y-3.5">
+                <div class="flex items-center justify-between">
+                    <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-md border border-emerald-500/30">
+                Phiếu Thanh Toán Của Bạn
+              </span>
+                        <h3 class="text-sm font-bold text-white mt-1">Buổi Đánh: Sân Đào Duy Anh</h3>
+                        <p class="text-[11px] text-slate-400">Chủ kèo: <b id="userViewHostName" class="text-slate-200">Bạn (Chủ kèo)</b></p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[10px] text-slate-400 block font-medium">Phần của bạn</span>
+                        <div id="userViewShareAmount" class="text-xl font-black text-emerald-400 tracking-tight">85.000 đ</div>
+                    </div>
+                </div>
+
+                <!-- Embedded Host QR Box for User Scanning -->
+                <div class="bg-slate-950/70 p-3.5 rounded-2xl border border-slate-800 text-center space-y-3">
+                    <div class="bg-white p-2.5 rounded-xl inline-block shadow-md">
+                        <img id="userViewQrImg" src="" alt="Mã QR Chuyển Khoản Chủ Kèo" class="w-40 h-40 object-contain rounded-lg">
+                    </div>
+                    <div class="text-xs text-slate-300">
+                        Quét mã bằng app ngân hàng của bạn hoặc chuyển khoản qua STK:
+                    </div>
+
+                    <!-- Host Account Details with 1-tap copy -->
+                    <div class="bg-slate-900/90 rounded-xl p-2.5 border border-slate-800 space-y-2 text-left text-xs">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-[10px] text-slate-400 block">Ngân hàng &amp; STK:</span>
+                                <span id="userViewBankAndAcc" class="font-bold font-mono text-white">MBBank • 0908123456</span>
+                            </div>
+                            <button onclick="copyUserViewAccount()" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-750 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold flex items-center gap-1 transition">
+                                <i class="fa-solid fa-copy"></i> Chép STK
+                            </button>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-1.5 border-t border-slate-800">
+                            <div class="overflow-hidden pr-2">
+                                <span class="text-[10px] text-slate-400 block">Nội dung CK chuẩn:</span>
+                                <span id="userViewTransferNote" class="font-bold font-mono text-emerald-300 truncate block text-[11px]">TIEN SAN 29/09/2026 - Thanh Linh</span>
+                            </div>
+                            <button onclick="copySpecificText('userViewTransferNote', 'Đã sao chép nội dung chuyển khoản!')" class="shrink-0 px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-750 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold flex items-center gap-1 transition">
+                                <i class="fa-solid fa-copy"></i> Chép ND
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Confirm Payment Button for User -->
+                    <div id="userActionContainer" class="space-y-2 pt-1">
+                        <!-- Rendered via JS based on payment status -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Badminton Passport / Profile Card -->
+            <div class="bg-slate-850 p-4 rounded-3xl border border-slate-800 space-y-3">
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                        <i class="fa-solid fa-id-card text-emerald-400"></i> Thẻ Vợt Thủ Của Bạn
+                    </h3>
+                    <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 font-bold">
+              Đã xác thực
+            </span>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2 text-center">
+                    <div class="bg-slate-900/80 p-2.5 rounded-2xl border border-slate-800">
+                        <span class="text-[10px] text-slate-400 block">Tín Nhiệm</span>
+                        <span class="text-sm font-black text-emerald-400">98/100</span>
+                        <span class="text-[9px] text-slate-500 block mt-0.5">Không bùng</span>
+                    </div>
+                    <div class="bg-slate-900/80 p-2.5 rounded-2xl border border-slate-800">
+                        <span class="text-[10px] text-slate-400 block">Trình Độ</span>
+                        <span class="text-xs font-bold text-white mt-0.5 block">Trung Bình+</span>
+                        <span class="text-[9px] text-slate-500 block mt-0.5">Level 3.2</span>
+                    </div>
+                    <div class="bg-slate-900/80 p-2.5 rounded-2xl border border-slate-800">
+                        <span class="text-[10px] text-slate-400 block">Số Trận Đã Đánh</span>
+                        <span class="text-sm font-black text-sky-400">24 trận</span>
+                        <span class="text-[9px] text-slate-500 block mt-0.5">Tháng này</span>
+                    </div>
+                </div>
+
+                <!-- Quick Personal Expense tracker -->
+                <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800 flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-slate-400 block">Quỹ cầu lông tháng 9</span>
+                            <span class="font-bold text-white">Đã chi 680.000 đ</span>
+                        </div>
+                    </div>
+                    <button onclick="showToast('Tính năng thống kê chi tiêu tháng đang đồng bộ!')" class="text-[10px] text-purple-400 hover:underline font-semibold">
+                        Chi tiết →
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 4: BẢNG GHI ĐIỂM SỐ TRỰC TIẾP ================= -->
+        <section id="tab-score" class="p-3.5 space-y-3.5 hidden">
+            <!-- Top Match Configuration & Mode Selector -->
+            <div class="bg-slate-800/90 p-3 rounded-2xl border border-slate-700 space-y-2.5">
+                <div class="flex items-center justify-between">
+                    <!-- Mode Switch: Singles vs Doubles -->
+                    <div class="inline-flex p-1 bg-slate-900 rounded-xl border border-slate-700/80">
+                        <button id="btnModeDoubles" onclick="setMatchMode('doubles')" class="px-3 py-1 rounded-lg text-xs font-bold bg-emerald-500 text-slate-950 transition shadow-sm">
+                            <i class="fa-solid fa-user-group text-[10px] mr-1"></i> Đánh Đôi (2v2)
+                        </button>
+                        <button id="btnModeSingles" onclick="setMatchMode('singles')" class="px-3 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">
+                            <i class="fa-solid fa-user text-[10px] mr-1"></i> Đánh Đơn (1v1)
+                        </button>
+                    </div>
+
+                    <!-- Target Score selector -->
+                    <div class="flex items-center gap-1 bg-slate-900 px-2 py-1 rounded-xl border border-slate-700/80">
+                        <span class="text-[10px] text-slate-400">Set:</span>
+                        <select id="targetScoreSelect" onchange="changeTargetScore(this.value)" class="bg-transparent text-xs font-bold text-emerald-400 focus:outline-none cursor-pointer">
+                            <option value="21" selected class="bg-slate-900 text-white">21 điểm</option>
+                            <option value="15" class="bg-slate-900 text-white">15 điểm</option>
+                            <option value="11" class="bg-slate-900 text-white">11 điểm</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Match Status & Actions Bar -->
+                <div class="flex items-center justify-between pt-1 border-t border-slate-700/60 text-xs">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[11px] font-bold text-slate-300">Hiệp <span id="currentSetNumber" class="text-emerald-400">1</span>/3</span>
+                        <span class="text-[10px] bg-slate-900 px-2 py-0.5 rounded-md text-slate-400 border border-slate-700" id="setsWonBadge">Set: A 0 - 0 B</span>
+                    </div>
+
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="openEditNamesModal()" class="px-2 py-1 rounded-lg bg-slate-700/70 hover:bg-slate-700 text-slate-300 text-[11px] font-medium transition" title="Đổi tên tuyển thủ">
+                            <i class="fa-solid fa-pen text-[10px] mr-0.5"></i> Đổi tên
+                        </button>
+                        <button onclick="swapCourtSides()" class="px-2 py-1 rounded-lg bg-slate-700/70 hover:bg-slate-700 text-slate-300 text-[11px] font-medium transition" title="Đổi bên sân">
+                            <i class="fa-solid fa-arrow-right-arrow-left text-[10px] mr-0.5"></i> Đổi sân
+                        </button>
+                        <button onclick="undoScore()" class="px-2 py-1 rounded-lg bg-slate-700/70 hover:bg-slate-700 text-amber-400 text-[11px] font-medium transition" title="Hoàn tác điểm vừa bấm">
+                            <i class="fa-solid fa-rotate-left text-[10px] mr-0.5"></i> Undo
+                        </button>
+                        <button onclick="confirmResetMatch()" class="px-2 py-1 rounded-lg bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-800/40 text-[11px] font-medium transition" title="Làm mới trận">
+                            <i class="fa-solid fa-trash-can text-[10px]"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real-time BWF Match & Service Announcement Callout -->
+            <div id="serviceCalloutBox" class="bg-gradient-to-r from-emerald-950/70 via-slate-850 to-slate-900 p-2.5 rounded-xl border border-emerald-500/30 flex items-center justify-between text-xs">
+                <div class="flex items-center gap-2 overflow-hidden">
+            <span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 text-xs">
+              <i class="fa-solid fa-feather"></i>
+            </span>
+                    <span id="serviceCalloutText" class="text-slate-200 text-[11px] font-medium truncate">
+              Đội A giao cầu ô Phải (Điểm 0) ➜ Đội B nhận cầu chéo
+            </span>
+                </div>
+                <span id="pointMatchBadge" class="text-[9px] uppercase font-black px-1.5 py-0.5 rounded bg-emerald-500 text-slate-950 shrink-0 hidden">
+            Match Point
+          </span>
+            </div>
+
+            <!-- ================= INTERACTIVE BWF VISUAL COURT ================= -->
+            <div class="court-mat rounded-3xl p-3 border-2 border-emerald-400/30 relative shadow-2xl overflow-hidden select-none">
+
+                <!-- TEAM TOP CONTAINER -->
+                <div class="bg-slate-950/80 backdrop-blur-md rounded-2xl p-3 border border-white/10 shadow-lg space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50"></span>
+                            <span id="teamTopLabel" class="text-xs font-bold text-emerald-300">Đội A</span>
+                            <span id="teamTopServeBadge" class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold ml-1">
+                  🏸 Giao Cầu
+                </span>
+                        </div>
+                        <div class="text-[10px] text-slate-400 font-mono" id="teamTopDetailNames">
+                            Tuấn &amp; Linh
+                        </div>
+                    </div>
+
+                    <!-- Top Court Halves (Left & Right Boxes from Umpire View) -->
+                    <div class="grid grid-cols-2 gap-1.5 py-1 text-center font-mono">
+                        <!-- Left Court Box -->
+                        <div id="topBoxLeft" class="bg-emerald-950/40 rounded-xl p-2 border border-emerald-500/20 flex flex-col items-center justify-center relative transition-all">
+                            <span class="text-[9px] text-emerald-400/70 uppercase tracking-widest block">Ô Trái (Lẻ)</span>
+                            <span id="topPlayerLeft" class="text-xs font-bold text-white mt-0.5 truncate max-w-full">Linh</span>
+                            <span id="topIconLeft" class="text-[10px] mt-0.5 text-emerald-400 hidden">🏸</span>
+                        </div>
+                        <!-- Right Court Box -->
+                        <div id="topBoxRight" class="bg-emerald-950/40 rounded-xl p-2 border border-emerald-500/20 flex flex-col items-center justify-center relative transition-all">
+                            <span class="text-[9px] text-emerald-400/70 uppercase tracking-widest block">Ô Phải (Chẵn)</span>
+                            <span id="topPlayerRight" class="text-xs font-bold text-white mt-0.5 truncate max-w-full">Tuấn</span>
+                            <span id="topIconRight" class="text-[10px] mt-0.5 text-emerald-400">🏸</span>
+                        </div>
+                    </div>
+
+                    <!-- Big Score Buttons for Team Top -->
+                    <div class="flex items-center justify-center gap-4 pt-1">
+                        <button onclick="decrementScore('top')" class="w-10 h-10 rounded-xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 active:scale-90 text-lg font-bold border border-slate-700 transition flex items-center justify-center shadow">
+                            -
+                        </button>
+                        <div id="scoreDisplayTop" class="text-5xl font-black text-white font-mono tracking-tighter w-24 text-center select-none">
+                            0
+                        </div>
+                        <button onclick="incrementScore('top')" class="w-14 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-slate-950 font-black hover:opacity-95 active:scale-95 text-2xl shadow-lg shadow-emerald-500/30 flex items-center justify-center transition">
+                            +1
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Center Net (Lưới Cầu Lông) -->
+                <div class="relative py-2 flex items-center justify-center">
+                    <div class="w-full h-1 bg-white/70 rounded-full shadow"></div>
+                    <div class="absolute bg-slate-950 px-2.5 py-0.5 rounded-full border border-white/30 text-[8px] font-black text-slate-200 tracking-widest uppercase flex items-center gap-1 shadow-md">
+                        <i class="fa-solid fa-arrows-split-up-and-left text-[7px] text-emerald-400"></i> LƯỚI BWF
+                    </div>
+                </div>
+
+                <!-- TEAM BOTTOM CONTAINER -->
+                <div class="bg-slate-950/80 backdrop-blur-md rounded-2xl p-3 border border-white/10 shadow-lg space-y-2">
+                    <!-- Big Score Buttons for Team Bottom -->
+                    <div class="flex items-center justify-center gap-4 pb-1">
+                        <button onclick="decrementScore('bottom')" class="w-10 h-10 rounded-xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 active:scale-90 text-lg font-bold border border-slate-700 transition flex items-center justify-center shadow">
+                            -
+                        </button>
+                        <div id="scoreDisplayBottom" class="text-5xl font-black text-white font-mono tracking-tighter w-24 text-center select-none">
+                            0
+                        </div>
+                        <button onclick="incrementScore('bottom')" class="w-14 h-12 rounded-2xl bg-gradient-to-tr from-sky-500 to-blue-400 text-slate-950 font-black hover:opacity-95 active:scale-95 text-2xl shadow-lg shadow-sky-500/30 flex items-center justify-center transition">
+                            +1
+                        </button>
+                    </div>
+
+                    <!-- Bottom Court Halves -->
+                    <div class="grid grid-cols-2 gap-1.5 py-1 text-center font-mono">
+                        <!-- Left Court Box -->
+                        <div id="bottomBoxLeft" class="bg-sky-950/40 rounded-xl p-2 border border-sky-500/20 flex flex-col items-center justify-center relative transition-all">
+                            <span class="text-[9px] text-sky-400/70 uppercase tracking-widest block">Ô Trái (Lẻ)</span>
+                            <span id="bottomPlayerLeft" class="text-xs font-bold text-white mt-0.5 truncate max-w-full">Nam</span>
+                            <span id="bottomIconLeft" class="text-[10px] mt-0.5 text-sky-400 hidden">🎯</span>
+                        </div>
+                        <!-- Right Court Box -->
+                        <div id="bottomBoxRight" class="bg-sky-950/40 rounded-xl p-2 border border-sky-500/20 flex flex-col items-center justify-center relative transition-all">
+                            <span class="text-[9px] text-sky-400/70 uppercase tracking-widest block">Ô Phải (Chẵn)</span>
+                            <span id="bottomPlayerRight" class="text-xs font-bold text-white mt-0.5 truncate max-w-full">Hoàng</span>
+                            <span id="bottomIconRight" class="text-[10px] mt-0.5 text-sky-400">🎯</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-1">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-sky-400 shadow-sm shadow-sky-400/50"></span>
+                            <span id="teamBottomLabel" class="text-xs font-bold text-sky-300">Đội B</span>
+                            <span id="teamBottomServeBadge" class="text-[9px] px-1.5 py-0.2 rounded bg-sky-500/20 text-sky-300 border border-sky-500/40 font-bold ml-1 hidden">
+                  🏸 Giao Cầu
+                </span>
+                        </div>
+                        <div class="text-[10px] text-slate-400 font-mono" id="teamBottomDetailNames">
+                            Hoàng &amp; Nam
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Set History Summary & End Match CTA -->
+            <div class="bg-slate-800/80 rounded-2xl p-3 border border-slate-700 flex items-center justify-between text-xs">
+                <div>
+                    <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Lịch sử các set</span>
+                    <div id="setHistoryList" class="font-bold text-slate-200 mt-0.5">
+                        Chưa có hiệp nào kết thúc
+                    </div>
+                </div>
+                <button onclick="openEndMatchModal()" class="px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 text-xs font-bold hover:opacity-90 shadow-md">
+                    <i class="fa-solid fa-flag-checkered mr-1"></i> Chốt Trận
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Mobile Bottom Navigation Bar (Chỉ hiển thị 2 Tab chính: Chia Tiền & Ghi Điểm) -->
+    <nav class="absolute bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-t border-slate-800/90 px-3 py-2 z-20">
+        <div class="grid grid-cols-3 gap-1.5">
+            <button onclick="switchTab('split')" id="nav-split" class="nav-item flex flex-col items-center justify-center py-2 px-1 rounded-2xl bg-emerald-500 text-slate-950 font-bold text-[11px] transition shadow-md shadow-emerald-500/20">
+                <i class="fa-solid fa-receipt text-sm mb-0.5"></i>
+                <span>Chủ Kèo</span>
+            </button>
+
+            <button onclick="switchTab('user')" id="nav-user" class="nav-item flex flex-col items-center justify-center py-2 px-1 rounded-2xl bg-slate-800 text-slate-400 hover:text-slate-200 font-semibold text-[11px] transition">
+                <i class="fa-solid fa-user-check text-sm mb-0.5"></i>
+                <span>Vợt Thủ</span>
+            </button>
+
+            <button onclick="switchTab('score')" id="nav-score" class="nav-item flex flex-col items-center justify-center py-2 px-1 rounded-2xl bg-slate-800 text-slate-400 hover:text-slate-200 font-semibold text-[11px] transition">
+                <i class="fa-solid fa-gamepad text-sm mb-0.5"></i>
+                <span>Bảng Điểm</span>
+            </button>
+        </div>
+
+        <!-- Hidden navigation buttons for matches & courts so existing code logic remains functional -->
+        <button onclick="switchTab('matches')" id="nav-matches" class="hidden"></button>
+        <button onclick="switchTab('courts')" id="nav-courts" class="hidden"></button>
+    </nav>
+
+    <!-- ================= MODALS & POPUPS ================= -->
+    <!-- Modal 1: Cấu hình Tài khoản Ngân hàng / STK -->
+    <div id="modalBankConfig" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-building-columns"></i>
+                    </div>
+                    <h3 class="text-sm font-bold text-white">Cài Đặt STK Nhận Tiền</h3>
+                </div>
+                <button onclick="closeModal('modalBankConfig')" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="text-[11px] text-slate-400 block mb-1">Ngân hàng thụ hưởng</label>
+                    <select id="configBankSelect" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white font-medium focus:outline-none focus:border-emerald-500">
+                        <option value="MB">MBBank (Ngân hàng Quân Đội)</option>
+                        <option value="VCB">Vietcombank</option>
+                        <option value="TCB">Techcombank</option>
+                        <option value="VPB">VPBank</option>
+                        <option value="ACB">ACB (Á Châu)</option>
+                        <option value="BIDV">BIDV</option>
+                        <option value="CTG">VietinBank</option>
+                        <option value="TPB">TPBank</option>
+                        <option value="STB">Sacombank</option>
+                        <option value="HDB">HDBank</option>
+                        <option value="VIB">VIB</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-[11px] text-slate-400 block mb-1">Số tài khoản (STK)</label>
+                    <input type="text" id="configAccountNo" placeholder="Ví dụ: 0908123456" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono font-semibold focus:outline-none focus:border-emerald-500">
+                </div>
+
+                <div>
+                    <label class="text-[11px] text-slate-400 block mb-1">Tên chủ tài khoản (Viết hoa không dấu)</label>
+                    <input type="text" id="configAccountName" placeholder="Ví dụ: NGUYEN VAN QUAN" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white uppercase font-semibold focus:outline-none focus:border-emerald-500">
+                </div>
+
+                <div>
+                    <label class="text-[11px] text-slate-400 block mb-1">Tiền tố ghi chú chuyển khoản</label>
+                    <input type="text" id="configNotePrefix" placeholder="TIEN SAN" value="TIEN SAN" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white font-medium focus:outline-none focus:border-emerald-500">
+                </div>
+            </div>
+
+            <div class="flex gap-2 pt-2 border-t border-slate-800">
+                <button onclick="closeModal('modalBankConfig')" class="flex-1 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-semibold text-xs hover:bg-slate-750 transition">
+                    Hủy
+                </button>
+                <button onclick="saveBankConfig()" class="flex-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition shadow-md shadow-emerald-500/20">
+                    Lưu Cấu Hình
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Phóng to VietQR -->
+    <div id="modalVietQr" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 text-center">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3 text-left">
+                <div>
+                    <h3 class="text-sm font-bold text-white">Quét Mã QR Chuyển Khoản</h3>
+                    <p class="text-[11px] text-slate-400" id="qrReceiverDetails">MBBank • 0908123456</p>
+                </div>
+                <button onclick="closeModal('modalVietQr')" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
+
+            <div class="bg-white p-3 rounded-2xl inline-block shadow-lg">
+                <img id="vietQrImg" src="" alt="Mã QR" class="w-56 h-56 object-contain rounded-lg">
+            </div>
+
+            <div class="space-y-1">
+                <div class="text-xs text-slate-400">Số tiền mỗi người:</div>
+                <div id="qrPerPersonAmount" class="text-2xl font-black text-emerald-400">85.000 đ</div>
+                <div class="text-[11px] text-slate-300">Chủ TK: <b id="qrReceiverName" class="text-white">NGUYEN VAN QUAN</b></div>
+                <div class="bg-slate-800/80 p-2 rounded-xl text-[11px] text-slate-400 font-mono flex items-center justify-between mt-2">
+                    <span>Nội dung: <b id="qrTransferNote" class="text-emerald-300">TIEN SAN 29/09/2026</b></span>
+                    <button onclick="copySpecificText('qrTransferNote', 'Đã sao chép nội dung!')" class="text-emerald-400 hover:underline text-[10px]">Chép</button>
+                </div>
+            </div>
+
+            <div class="flex gap-2 pt-2">
+                <button onclick="openBankConfigModal()" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-300 text-xs font-semibold transition">
+                    Đổi STK Khác
+                </button>
+                <button onclick="markAllPaid()" class="flex-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition shadow-md shadow-emerald-500/20">
+                    Xác Nhận Đã Thu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Thêm người chơi -->
+    <div id="modalAddPlayer" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-700 w-full max-w-xs rounded-3xl p-5 shadow-2xl space-y-4">
+            <h3 class="text-sm font-bold text-white">Thêm Người Vào Buổi Chơi</h3>
+            <input type="text" id="inputNewPlayerName" placeholder="Tên người chơi (ví dụ: Hải Đăng)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+            <div class="flex gap-2">
+                <button onclick="closeModal('modalAddPlayer')" class="flex-1 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold">Hủy</button>
+                <button onclick="confirmAddPlayer()" class="flex-1 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs">Thêm Ngay</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 4: Đổi tên tuyển thủ trên Bảng Điểm -->
+    <div id="modalEditNames" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <h3 class="text-sm font-bold text-white">Đổi Tên Tuyển Thủ</h3>
+                <button onclick="closeModal('modalEditNames')" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
+            <div id="playerInputsContainer" class="space-y-3">
+                <!-- Dynamic inputs based on mode -->
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="closeModal('modalEditNames')" class="flex-1 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold">Hủy</button>
+                <button onclick="savePlayerNames()" class="flex-1 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs">Lưu Thay Đổi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 5: Thông tin Điểm Uy Tín (Anti-Bùng) -->
+    <div id="modalTrustScore" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-700 w-full max-w-xs rounded-3xl p-5 shadow-2xl space-y-3 text-center">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h3 class="text-sm font-bold text-white">Hệ Thống Điểm Tín Nhiệm</h3>
+            <p class="text-xs text-slate-300 leading-relaxed text-left">
+                • Điểm xuất phát: <b>100 điểm</b>.<br>
+                • Tham gia đúng giờ: <b>+5 điểm</b>.<br>
+                • Bùng slot / Hủy sát giờ (&lt;2 tiếng): <b>-30 điểm</b> &amp; mất cọc.<br>
+                • Dưới <b>70 điểm</b>: Bị hạn chế đăng ký các kèo có cọc bảo chứng.
+            </p>
+            <button onclick="closeModal('modalTrustScore')" class="w-full py-2.5 rounded-xl bg-slate-800 text-slate-200 text-xs font-bold hover:bg-slate-750">
+                Đã Hiểu
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal 6: Đăng tìm slot mới (ẩn) -->
+    <div id="modalCreateMatch" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-700 w-full max-w-xs rounded-3xl p-5 shadow-2xl space-y-3">
+            <h3 class="text-sm font-bold text-white">Đăng Tin Ghép Kèo Mới</h3>
+            <div class="space-y-2 text-xs">
+                <input type="text" id="newMatchClub" placeholder="Tên CLB / Nhóm" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                <input type="text" id="newMatchCourt" placeholder="Địa chỉ sân thi đấu" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                <input type="text" id="newMatchTime" value="18:00 - 20:00" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                <input type="number" id="newMatchSlots" value="2" placeholder="Số slot cần tuyển" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                <select id="newMatchLevel" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                    <option value="Trung Bình">Trình độ: Trung Bình</option>
+                    <option value="Khá / Bán Chuyên">Trình độ: Khá / Nâng Cao</option>
+                    <option value="Yếu / Dưỡng Sinh">Trình độ: Dưỡng Sinh</option>
+                </select>
+                <input type="text" id="newMatchCost" value="65.000 đ" placeholder="Chi phí mỗi slot" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                <label class="flex items-center gap-2 pt-1 cursor-pointer">
+                    <input type="checkbox" id="commitmentCheck" checked class="accent-emerald-500 w-4 h-4 rounded">
+                    <span class="text-[11px] text-slate-300">Yêu cầu bảo chứng chống bùng kèo</span>
+                </label>
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="closeModal('modalCreateMatch')" class="flex-1 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold">Hủy</button>
+                <button onclick="submitNewMatch()" class="flex-1 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs">Đăng Kèo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 7: Danh sách App Ngân Hàng Mở Chuyển Khoản Trực Tiếp -->
+    <div id="modalBankAppPicker" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+        <div class="bg-slate-900 border border-slate-700 w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto hide-scrollbar">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-mobile-screen-button"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-white">Mở App Ngân Hàng</h3>
+                        <p class="text-[10px] text-emerald-400 font-medium">✓ Đã tự sao chép STK &amp; Nội dung</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('modalBankAppPicker')" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
+
+            <div class="bg-slate-800/60 p-2.5 rounded-2xl border border-slate-700/80 text-[11px] text-slate-300 space-y-1">
+                <div class="flex justify-between">
+                    <span class="text-slate-400">STK thụ hưởng:</span>
+                    <span id="quickPickerAccNo" class="font-bold font-mono text-white">0908123456</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Số tiền:</span>
+                    <span id="quickPickerAmount" class="font-bold text-emerald-400">85.000 đ</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Nội dung CK:</span>
+                    <span id="quickPickerNote" class="font-bold font-mono text-emerald-300 text-[10px] truncate max-w-[170px]">TIEN SAN 29/09</span>
+                </div>
+            </div>
+
+            <!-- 2 lựa chọn thanh toán thông minh -->
+            <div class="bg-emerald-950/40 border border-emerald-500/30 p-3 rounded-2xl space-y-2">
+                <div class="text-[11px] text-emerald-300 font-bold flex items-center gap-1.5">
+                    <i class="fa-solid fa-wand-magic-sparkles text-emerald-400"></i> Cách không cần gõ số tiền:
+                </div>
+                <p class="text-[10px] text-slate-300 leading-relaxed">
+                    Nhấn nút dưới để lưu mã QR kèm số tiền vào máy. Khi app ngân hàng mở ra, bạn chỉ cần chọn <b>Quét ảnh QR</b> là máy tự điền số tiền!
+                </p>
+                <button onclick="downloadQrAndLaunchBank()" class="w-full py-2 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition flex items-center justify-center gap-1.5 shadow">
+                    <i class="fa-solid fa-download text-[11px]"></i> Lưu QR &amp; Mở App Chuyển Tiền
+                </button>
+            </div>
+
+            <div class="space-y-1.5">
+                <div class="flex items-center justify-between px-1">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Hoặc chọn mở trực tiếp app:</span>
+                    <span id="savedBankStatusText" class="text-[10px] text-emerald-400 font-medium"></span>
+                </div>
+                <div class="grid grid-cols-2 gap-2" id="bankAppsGrid">
+                    <!-- Dynamic bank buttons injected by JS -->
+                </div>
+            </div>
+
+            <div class="pt-2 border-t border-slate-800 text-center">
+                <p class="text-[10px] text-slate-400 mb-2">Sau khi chuyển khoản thành công, hãy bấm báo chủ kèo:</p>
+                <button onclick="confirmPaidAndCloseModal()" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-emerald-400 border border-emerald-500/30 text-xs font-bold transition flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-check"></i> Xác Nhận Đã Chuyển Tiền Xong
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div> <!-- End Mobile Shell -->
+
+<!-- Toast Notification Floating Widget -->
+<div id="toastNotification" class="fixed top-5 z-50 bg-emerald-500 text-slate-950 px-4 py-2.5 rounded-2xl shadow-2xl font-bold text-xs flex items-center gap-2 transition-all duration-300 transform -translate-y-3 opacity-0 pointer-events-none">
+    <i class="fa-solid fa-circle-check"></i>
+    <span id="toastMsg">Thành công!</span>
+</div>
+
+<script>
+    /* Audio synthesizer setup */
+    let synth = null;
+    function initAudio() {
+      try {
+        if (window.Tone && !synth) {
+          synth = new Tone.PolySynth(Tone.Synth).toDestination();
+          synth.volume.value = -8;
+        }
+        if (window.Tone && Tone.context.state !== 'running') {
+          Tone.start();
+        }
+      } catch (e) {
+        console.debug("Audio init skipped", e);
+      }
+    }
+
+    function playSound(type) {
+      try {
+        initAudio();
+        if (!synth) return;
+        if (type === 'score') {
+          synth.triggerAttackRelease("C5", "16n");
+        } else if (type === 'whistle') {
+          synth.triggerAttackRelease(["E5", "G5"], "8n");
+        } else if (type === 'success') {
+          synth.triggerAttackRelease(["C4", "G4", "C5"], "12n");
+        }
+      } catch (e) {
+        console.debug("Audio play issue", e);
+      }
+    }
+
+    // Dynamic Bank Account Configuration (Stored in state and localStorage)
+    let bankConfig = {
+      bankId: "MB",
+      bankName: "MBBank",
+      accountNo: "0908123456",
+      accountName: "NGUYEN VAN QUAN",
+      notePrefix: "TIEN SAN"
+    };
+
+    // Custom user uploaded QR image (base64)
+    let customQrImageBase64 = null;
+
+    // Helper to format default note: TIEN SAN + DD/MM/YYYY
+    function getFormattedDateNote() {
+      const now = new Date();
+      const d = String(now.getDate()).padStart(2, '0');
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const y = now.getFullYear();
+      return `${bankConfig.notePrefix || "TIEN SAN"} ${d}/${m}/${y}`;
+    }
+
+    function loadBankConfig() {
+      try {
+        const saved = localStorage.getItem('smashmate_bank_config');
+        if (saved) {
+          bankConfig = { ...bankConfig, ...JSON.parse(saved) };
+        }
+        const savedQr = localStorage.getItem('smashmate_custom_qr_image');
+        if (savedQr) {
+          customQrImageBase64 = savedQr;
+        }
+      } catch (e) {
+        console.debug("Could not read bank config or QR image", e);
+      }
+      updateBankBadgeUI();
+    }
+
+    function updateBankBadgeUI() {
+      const badge = document.getElementById('bankBadgePreview');
+      const lastDigits = bankConfig.accountNo.slice(-4) || '***';
+      if (badge) {
+        badge.textContent = `${bankConfig.bankId} •••${lastDigits}`;
+      }
+    }
+
+    function openBankConfigModal() {
+      playSound('score');
+      document.getElementById('configBankSelect').value = bankConfig.bankId;
+      document.getElementById('configAccountNo').value = bankConfig.accountNo;
+      document.getElementById('configAccountName').value = bankConfig.accountName;
+      document.getElementById('configNotePrefix').value = bankConfig.notePrefix || "TIEN SAN";
+      document.getElementById('modalBankConfig').classList.remove('hidden');
+    }
+
+    function saveBankConfig() {
+      const select = document.getElementById('configBankSelect');
+      const bankId = select.value;
+      const bankName = select.options[select.selectedIndex].text.split(' ')[0];
+      const accountNo = document.getElementById('configAccountNo').value.trim();
+      const accountName = document.getElementById('configAccountName').value.trim().toUpperCase();
+      const notePrefix = document.getElementById('configNotePrefix').value.trim() || "TIEN SAN";
+
+      if (!accountNo) {
+        showToast("Vui lòng nhập số tài khoản!", true);
+        return;
+      }
+      if (!accountName) {
+        showToast("Vui lòng nhập tên chủ tài khoản!", true);
+        return;
+      }
+
+      bankConfig = { bankId, bankName, accountNo, accountName, notePrefix };
+
+      try {
+        localStorage.setItem('smashmate_bank_config', JSON.stringify(bankConfig));
+      } catch (e) {
+        console.debug("Could not save to localStorage", e);
+      }
+
+      updateBankBadgeUI();
+      closeModal('modalBankConfig');
+      playSound('success');
+      showToast(`Đã lưu STK nhận tiền: ${bankId} - ${accountNo}`);
+
+      // Refresh QR display
+      calculateBill();
+      const qrModal = document.getElementById('modalVietQr');
+      if (!qrModal.classList.contains('hidden')) {
+        generateVietQrModal();
+      }
+    }
+
+    function handleQrImageUpload(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        customQrImageBase64 = e.target.result;
+        try {
+          localStorage.setItem('smashmate_custom_qr_image', customQrImageBase64);
+        } catch (err) {
+          console.debug("Image quota warning", err);
+        }
+        playSound('success');
+        showToast("Đã tải ảnh mã QR lên thành công!");
+        calculateBill();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeCustomQrImage() {
+      customQrImageBase64 = null;
+      try {
+        localStorage.removeItem('smashmate_custom_qr_image');
+      } catch (e) {}
+      playSound('score');
+      showToast("Đã chuyển về mã VietQR tự động.");
+      calculateBill();
+    }
+
+    // Participants for Split Bill
+    let participants = [
+      { id: 1, name: "Bạn (Chủ kèo)", isPaid: true, isCheckin: true },
+      { id: 2, name: "Tuấn Vũ", isPaid: true, isCheckin: true },
+      { id: 3, name: "Thanh Linh", isPaid: false, isCheckin: true },
+      { id: 4, name: "Hoàng Nam", isPaid: false, isCheckin: true }
+    ];
+
+    // Current selected user for User Tab View (defaults to Thanh Linh - unpaid demo)
+    let currentSelectedUserId = 3;
+    let preferredBankingScheme = localStorage.getItem('smashmate_preferred_bank_scheme') || null;
+    let preferredBankingName = localStorage.getItem('smashmate_preferred_bank_name') || null;
+    let preferredBankingAppId = localStorage.getItem('smashmate_preferred_bank_appid') || 'mb';
+
+    function switchTab(tabId) {
+      playSound('score');
+      ['matches', 'courts', 'split', 'user', 'score'].forEach(id => {
+        const el = document.getElementById(`tab-${id}`);
+        const nav = document.getElementById(`nav-${id}`);
+        if (!el) return;
+
+        if (id === tabId) {
+          el.classList.remove('hidden');
+          if (nav) {
+            nav.className = "nav-item flex flex-col items-center justify-center py-2 px-1 rounded-2xl bg-emerald-500 text-slate-950 font-bold text-[11px] transition shadow-md shadow-emerald-500/20";
+          }
+        } else {
+          el.classList.add('hidden');
+          if (nav) {
+            nav.className = "nav-item flex flex-col items-center justify-center py-2 px-1 rounded-2xl bg-slate-800 text-slate-400 hover:text-slate-200 font-semibold text-[11px] transition";
+          }
+        }
+      });
+
+      if (tabId === 'courts') renderCourts();
+      if (tabId === 'split') calculateBill();
+      if (tabId === 'user') renderUserTabView();
+    }
+
+    function renderUserTabView() {
+      const select = document.getElementById('userProfileSelect');
+      if (select) {
+        select.innerHTML = '';
+        participants.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.id;
+          opt.textContent = `${p.name} ${p.isPaid ? '(✓ Đã CK)' : '(⏳ Chưa CK)'}`;
+          opt.selected = (p.id === currentSelectedUserId);
+          opt.className = "bg-slate-900 text-white";
+          select.appendChild(opt);
+        });
+      }
+
+      const currentUser = participants.find(p => p.id === currentSelectedUserId) || participants[2];
+
+      // Update avatar initials
+      const avatar = document.getElementById('userAvatarBadge');
+      if (avatar && currentUser) {
+        const initials = currentUser.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+        avatar.textContent = initials;
+      }
+
+      // Calculate share
+      const courtFee = parseFloat(document.getElementById('inputCourtFee')?.value) || 0;
+      const shuttleFee = parseFloat(document.getElementById('inputShuttleFee')?.value) || 0;
+      const drinksFee = parseFloat(document.getElementById('inputDrinksFee')?.value) || 0;
+      const total = courtFee + shuttleFee + drinksFee;
+      const checkinCount = participants.filter(p => p.isCheckin).length || 1;
+      const perPerson = Math.round(total / checkinCount);
+
+      const shareAmountEl = document.getElementById('userViewShareAmount');
+      if (shareAmountEl) {
+        shareAmountEl.textContent = `${perPerson.toLocaleString()} đ`;
+      }
+
+      // Update Bank info & Note
+      const bankInfoEl = document.getElementById('userViewBankAndAcc');
+      if (bankInfoEl) {
+        bankInfoEl.textContent = `${bankConfig.bankName || bankConfig.bankId} • ${bankConfig.accountNo}`;
+      }
+
+      const noteText = `${getFormattedDateNote()} - ${currentUser.name}`;
+      const noteEl = document.getElementById('userViewTransferNote');
+      if (noteEl) {
+        noteEl.textContent = noteText;
+      }
+
+      // Update User QR image
+      const qrImg = document.getElementById('userViewQrImg');
+      if (qrImg) {
+        if (customQrImageBase64) {
+          qrImg.src = customQrImageBase64;
+        } else {
+          const cleanNote = noteText.replace(/[^\w\s\d]/gi, '');
+          qrImg.src = `https://img.vietqr.io/image/${bankConfig.bankId}-${bankConfig.accountNo}-compact2.png?amount=${perPerson}&addInfo=${encodeURIComponent(cleanNote)}&accountName=${encodeURIComponent(bankConfig.accountName)}`;
+          qrImg.onerror = () => {
+            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=VIETQR_${bankConfig.bankId}_${bankConfig.accountNo}_${perPerson}`;
+          };
+        }
+      }
+
+      // Update status pill and CTA button
+      const statusPill = document.getElementById('userPaymentStatusPill');
+      const actionBox = document.getElementById('userActionContainer');
+
+      if (currentUser.isPaid) {
+        if (statusPill) {
+          statusPill.className = "text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/30";
+          statusPill.innerHTML = '<i class="fa-solid fa-check text-[10px] mr-1"></i>Đã Hoàn Tất';
+        }
+        if (actionBox) {
+          actionBox.innerHTML = `
+            <div class="py-2.5 rounded-xl bg-emerald-500/20 text-emerald-400 text-xs font-bold border border-emerald-500/40 flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-circle-check text-sm"></i> Bạn đã thanh toán buổi đánh này!
+            </div>
+            <button onclick="openBankingAppSelector()" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-300 text-[11px] font-semibold flex items-center justify-center gap-1.5 transition">
+              <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-emerald-400"></i> Mở lại app ngân hàng
+            </button>
+          `;
+        }
+      } else {
+        if (statusPill) {
+          statusPill.className = "text-[11px] font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/30";
+          statusPill.innerHTML = '<i class="fa-regular fa-clock text-[10px] mr-1"></i>Chưa Chuyển';
+        }
+        if (actionBox) {
+          const directBankCta = preferredBankingName ? `Mở ${preferredBankingName} Chuyển Tiền` : 'Chuyển Khoản Qua App Ngân Hàng';
+          actionBox.innerHTML = `
+            <div class="grid grid-cols-1 gap-2">
+              <button onclick="handlePrimaryTransferAction()" class="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-400 text-slate-950 font-black text-xs shadow-lg shadow-emerald-500/25 hover:opacity-95 active:scale-98 transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-mobile-screen-button text-sm"></i> ${directBankCta}
+              </button>
+              ${preferredBankingName ? `
+                <button onclick="openBankingAppSelector(true)" class="text-[10px] text-slate-400 hover:text-emerald-400 text-center py-0.5 font-medium underline">
+                  Đổi sang ứng dụng ngân hàng khác
+                </button>
+              ` : ''}
+            </div>
+            <button onclick="userConfirmTransfer(${currentUser.id})" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-300 border border-slate-700 font-bold text-xs hover:text-white transition flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-paper-plane text-emerald-400 text-[10px]"></i> Tôi Đã Chuyển Khoản! (Báo Chủ Kèo)
+            </button>
+          `;
+        }
+      }
+    }
+
+    /* Popular Vietnamese Banking App Schemes */
+    const popularBankingApps = [
+      { id: 'mb', name: 'MBBank', vietqrApp: 'mb', scheme: 'mbmobile://', color: 'from-blue-600 to-indigo-600', icon: 'fa-building-columns' },
+      { id: 'vcb', name: 'Vietcombank', vietqrApp: 'vcb', scheme: 'vietcombank://', color: 'from-emerald-600 to-green-700', icon: 'fa-leaf' },
+      { id: 'tcb', name: 'Techcombank', vietqrApp: 'tcb', scheme: 'techcombank://', color: 'from-red-600 to-red-700', icon: 'fa-shield-halved' },
+      { id: 'bidv', name: 'BIDV Smart', vietqrApp: 'bidv', scheme: 'bidvsmartbanking://', color: 'from-teal-600 to-cyan-700', icon: 'fa-landmark' },
+      { id: 'vpb', name: 'VPBank NEO', vietqrApp: 'vpb', scheme: 'vpbankneo://', color: 'from-emerald-500 to-teal-600', icon: 'fa-bolt' },
+      { id: 'icb', name: 'VietinBank', vietqrApp: 'icb', scheme: 'vietinbankipay://', color: 'from-blue-500 to-blue-700', icon: 'fa-building-columns' },
+      { id: 'tpb', name: 'TPBank', vietqrApp: 'tpb', scheme: 'tpbank://', color: 'from-purple-600 to-indigo-600', icon: 'fa-gem' },
+      { id: 'acb', name: 'ACB ONE', vietqrApp: 'acb', scheme: 'acbapp://', color: 'from-sky-500 to-blue-600', icon: 'fa-circle-dot' },
+      { id: 'momo', name: 'MoMo', vietqrApp: 'momo', scheme: 'momo://', color: 'from-pink-600 to-rose-600', icon: 'fa-wallet' }
+    ];
+
+    function handlePrimaryTransferAction() {
+      const savedBank = popularBankingApps.find(b => b.name === preferredBankingName || b.vietqrApp === preferredBankingAppId);
+      if (savedBank) {
+        launchBankApp(savedBank);
+      } else {
+        openBankingAppSelector();
+      }
+    }
+
+    function openBankingAppSelector(forceChange = false) {
+      playSound('score');
+      const currentUser = participants.find(p => p.id === currentSelectedUserId) || participants[2];
+
+      // Calculate share
+      const courtFee = parseFloat(document.getElementById('inputCourtFee')?.value) || 0;
+      const shuttleFee = parseFloat(document.getElementById('inputShuttleFee')?.value) || 0;
+      const drinksFee = parseFloat(document.getElementById('inputDrinksFee')?.value) || 0;
+      const total = courtFee + shuttleFee + drinksFee;
+      const checkinCount = participants.filter(p => p.isCheckin).length || 1;
+      const perPerson = Math.round(total / checkinCount);
+      const noteText = `${getFormattedDateNote()} - ${currentUser.name}`;
+
+      // Auto-copy STK & Transfer note to clipboard for user convenience
+      const dummy = document.createElement("textarea");
+      document.body.appendChild(dummy);
+      dummy.value = bankConfig.accountNo;
+      dummy.select();
+      document.execCommand('copy');
+      document.body.removeChild(dummy);
+
+      // Fill modal details
+      const elAcc = document.getElementById('quickPickerAccNo');
+      const elAmt = document.getElementById('quickPickerAmount');
+      const elNote = document.getElementById('quickPickerNote');
+      if (elAcc) elAcc.textContent = `${bankConfig.bankId} • ${bankConfig.accountNo}`;
+      if (elAmt) elAmt.textContent = `${perPerson.toLocaleString()} đ`;
+      if (elNote) elNote.textContent = noteText;
+
+      const savedStatus = document.getElementById('savedBankStatusText');
+      if (savedStatus) {
+        savedStatus.textContent = preferredBankingName ? `(Đang nhớ: ${preferredBankingName})` : '';
+      }
+
+      // Render banking buttons
+      const grid = document.getElementById('bankAppsGrid');
+      if (grid) {
+        grid.innerHTML = popularBankingApps.map(bank => {
+          const isSelected = (preferredBankingName === bank.name || preferredBankingAppId === bank.vietqrApp);
+          return `
+            <button onclick="selectAndLaunchBank('${bank.vietqrApp}', '${bank.name}')" class="p-2.5 rounded-2xl ${isSelected ? 'bg-emerald-950/80 border-emerald-500/60 ring-1 ring-emerald-500' : 'bg-slate-800 hover:bg-slate-750 border-slate-700/80'} active:scale-95 border flex items-center gap-2.5 text-left transition shadow-sm relative">
+              <div class="w-8 h-8 rounded-xl bg-gradient-to-tr ${bank.color} text-white flex items-center justify-center shrink-0 text-xs shadow">
+                <i class="fa-solid ${bank.icon}"></i>
+              </div>
+              <div class="overflow-hidden">
+                <span class="text-xs font-bold text-white block truncate leading-tight">${bank.name}</span>
+                <span class="text-[9px] text-emerald-400 font-medium">${isSelected ? '✓ Mặc định' : 'Mở ngay ➜'}</span>
+              </div>
+            </button>
+          `;
+        }).join('');
+      }
+
+      showToast("Đã chép STK! Bạn có thể chọn app ngân hàng.");
+      document.getElementById('modalBankAppPicker').classList.remove('hidden');
+    }
+
+    function selectAndLaunchBank(appId, bankName) {
+      const bankObj = popularBankingApps.find(b => b.vietqrApp === appId || b.name === bankName) || popularBankingApps[0];
+      preferredBankingScheme = bankObj.scheme;
+      preferredBankingName = bankObj.name;
+      preferredBankingAppId = bankObj.vietqrApp;
+
+      localStorage.setItem('smashmate_preferred_bank_scheme', bankObj.scheme);
+      localStorage.setItem('smashmate_preferred_bank_name', bankObj.name);
+      localStorage.setItem('smashmate_preferred_bank_appid', bankObj.vietqrApp);
+
+      renderUserTabView();
+      launchBankApp(bankObj);
+    }
+
+    function downloadQrAndLaunchBank() {
+      const qrImg = document.getElementById('userViewQrImg');
+      if (!qrImg || !qrImg.src) {
+        showToast("Không tìm thấy mã QR!", true);
+        return;
+      }
+
+      // Tạo liên kết tải ảnh QR về máy
+      const downloadLink = document.createElement("a");
+      downloadLink.href = qrImg.src;
+      downloadLink.download = `VietQR_TienSan_${getFormattedDateNote().replace(/[\/\s]/g, '_')}.png`;
+      downloadLink.target = "_blank";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+
+      playSound('success');
+      showToast("Đã tải QR có sẵn số tiền! Đang chuyển đến app ngân hàng...");
+
+      // Mở app ngân hàng ưa thích hoặc mặc định
+      setTimeout(() => {
+        const targetBank = popularBankingApps.find(b => b.name === preferredBankingName || b.vietqrApp === preferredBankingAppId) || popularBankingApps[0];
+        launchBankApp(targetBank);
+      }, 700);
+    }
+
+    function launchBankApp(bankTarget) {
+      playSound('score');
+
+      const bankObj = typeof bankTarget === 'string'
+        ? (popularBankingApps.find(b => b.name === bankTarget || b.vietqrApp === bankTarget) || popularBankingApps[0])
+        : (bankTarget || popularBankingApps[0]);
+
+      const currentUser = participants.find(p => p.id === currentSelectedUserId) || participants[2];
+      const courtFee = parseFloat(document.getElementById('inputCourtFee')?.value) || 0;
+      const shuttleFee = parseFloat(document.getElementById('inputShuttleFee')?.value) || 0;
+      const drinksFee = parseFloat(document.getElementById('inputDrinksFee')?.value) || 0;
+      const total = courtFee + shuttleFee + drinksFee;
+      const checkinCount = participants.filter(p => p.isCheckin).length || 1;
+      const perPerson = Math.round(total / checkinCount);
+      const rawNote = `${getFormattedDateNote()} - ${currentUser.name}`.replace(/[^\w\s\d]/gi, '');
+
+      // Tự động sao chép STK vào bộ nhớ tạm
+      const dummy = document.createElement("textarea");
+      document.body.appendChild(dummy);
+      dummy.value = bankConfig.accountNo;
+      dummy.select();
+      document.execCommand('copy');
+      document.body.removeChild(dummy);
+
+      showToast(`Đã chép STK! Đang kết nối app ${bankObj.name}...`);
+
+      // Sử dụng VietQR Universal Deeplink chính thức theo chuẩn NAPAS
+      // Cú pháp: https://dl.vietqr.io/pay?app={appId}&ba={accountNo}@{bankId}&am={amount}&tn={note}
+      const targetBankCode = (bankConfig.bankId || 'MB').toLowerCase();
+      const universalLink = `https://dl.vietqr.io/pay?app=${bankObj.vietqrApp}&ba=${bankConfig.accountNo}@${targetBankCode}&am=${perPerson}&tn=${encodeURIComponent(rawNote)}&bn=${encodeURIComponent(bankConfig.accountName)}`;
+
+      // Kích hoạt qua thẻ liên kết an toàn (tránh làm reload hoặc thoát app)
+      const safeLink = document.createElement('a');
+      safeLink.href = universalLink;
+      safeLink.target = '_blank';
+      safeLink.rel = 'noopener noreferrer';
+      document.body.appendChild(safeLink);
+      safeLink.click();
+      document.body.removeChild(safeLink);
+    }
+
+    function confirmPaidAndCloseModal() {
+      closeModal('modalBankAppPicker');
+      userConfirmTransfer(currentSelectedUserId);
+    }
+
+    function changeCurrentActiveUser(userId) {
+      currentSelectedUserId = parseInt(userId);
+      playSound('score');
+      renderUserTabView();
+    }
+
+    function userConfirmTransfer(userId) {
+      const p = participants.find(x => x.id === userId);
+      if (p) {
+        p.isPaid = true;
+        playSound('success');
+        showToast(`Đã ghi nhận ${p.name} chuyển khoản! Đang đồng bộ với Chủ Kèo.`);
+        renderUserTabView();
+        calculateBill(); // sync host bill view
+      }
+    }
+
+    function copyUserViewAccount() {
+      const text = bankConfig.accountNo;
+      const dummy = document.createElement("textarea");
+      document.body.appendChild(dummy);
+      dummy.value = text;
+      dummy.select();
+      document.execCommand('copy');
+      document.body.removeChild(dummy);
+      playSound('success');
+      showToast(`Đã chép STK: ${text}`);
+    }
+
+    function calculateBill() {
+      const courtFee = parseFloat(document.getElementById('inputCourtFee').value) || 0;
+      const shuttleFee = parseFloat(document.getElementById('inputShuttleFee').value) || 0;
+      const drinksFee = parseFloat(document.getElementById('inputDrinksFee').value) || 0;
+
+      const total = courtFee + shuttleFee + drinksFee;
+      document.getElementById('totalBillDisplay').textContent = `${total.toLocaleString()} đ`;
+
+      const checkinCount = participants.filter(p => p.isCheckin).length;
+      document.getElementById('activePlayerCount').textContent = checkinCount;
+
+      const perPerson = checkinCount > 0 ? Math.round(total / checkinCount) : 0;
+      document.getElementById('perPersonShareDisplay').textContent = perPerson.toLocaleString();
+
+      const inlineShare = document.getElementById('inlinePerPersonShare');
+      if (inlineShare) {
+        inlineShare.textContent = `${perPerson.toLocaleString()} đ`;
+      }
+
+      const defaultNote = getFormattedDateNote();
+      const noteLabel = document.getElementById('defaultDateTransferNote');
+      if (noteLabel) {
+        noteLabel.textContent = defaultNote;
+      }
+
+      updateInlineQrImage(perPerson, defaultNote);
+      renderParticipantsList(perPerson);
+    }
+
+    function updateInlineQrImage(amount, transferNote) {
+      const img = document.getElementById('inlineQrImage');
+      const badge = document.getElementById('qrSourceTypeBadge');
+      const watermark = document.getElementById('customQrWatermark');
+      const btnRemove = document.getElementById('btnRemoveCustomQr');
+      const btnUploadText = document.getElementById('btnUploadQrText');
+
+      if (!img) return;
+
+      if (customQrImageBase64) {
+        img.src = customQrImageBase64;
+        if (badge) badge.textContent = "Ảnh QR Ngân Hàng Cá Nhân";
+        if (watermark) watermark.classList.remove('hidden');
+        if (btnRemove) btnRemove.classList.remove('hidden');
+        if (btnUploadText) btnUploadText.textContent = "Đổi ảnh khác";
+      } else {
+        const cleanNote = transferNote.replace(/[^\w\s\d]/gi, '');
+        const vietQrUrl = `https://img.vietqr.io/image/${bankConfig.bankId}-${bankConfig.accountNo}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(cleanNote)}&accountName=${encodeURIComponent(bankConfig.accountName)}`;
+        img.src = vietQrUrl;
+        img.onerror = () => {
+          img.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=VIETQR_${bankConfig.bankId}_${bankConfig.accountNo}_${amount}`;
+        };
+        if (badge) badge.textContent = "VietQR Tự Động Theo Số Tiền";
+        if (watermark) watermark.classList.add('hidden');
+        if (btnRemove) btnRemove.classList.add('hidden');
+        if (btnUploadText) btnUploadText.textContent = "Thêm ảnh QR";
+      }
+    }
+
+    function renderParticipantsList(perPerson = 85000) {
+      const listEl = document.getElementById('participantsList');
+      if (!listEl) return;
+      listEl.innerHTML = '';
+
+      participants.forEach((p, index) => {
+        const item = document.createElement('div');
+        item.className = `flex items-center justify-between p-3 rounded-2xl border transition ${p.isPaid ? 'bg-slate-900/90 border-emerald-500/20' : 'bg-slate-900/50 border-slate-800'}`;
+
+        const colors = ['bg-emerald-500/20 text-emerald-400', 'bg-sky-500/20 text-sky-400', 'bg-amber-500/20 text-amber-400', 'bg-purple-500/20 text-purple-400'];
+        const badgeColor = colors[index % colors.length];
+
+        item.innerHTML = `
+          <div class="flex items-center gap-3">
+            <input type="checkbox" ${p.isCheckin ? 'checked' : ''} onchange="togglePlayerCheckin(${p.id})" class="accent-emerald-500 w-4 h-4 rounded cursor-pointer" title="Điểm danh có mặt">
+            <div class="w-8 h-8 rounded-xl ${badgeColor} flex items-center justify-center font-bold text-xs uppercase">
+              ${p.name.charAt(0)}
+            </div>
+            <div>
+              <span class="font-bold text-xs text-white block ${!p.isCheckin ? 'line-through text-slate-500' : ''}">${p.name}</span>
+              <span class="text-[10px] text-slate-400 font-mono">${p.isCheckin ? perPerson.toLocaleString() + ' đ' : 'Vắng mặt (0 đ)'}</span>
+            </div>
+          </div>
+          <div>
+            ${p.isPaid ? `
+              <button onclick="togglePlayerPaid(${p.id})" class="px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 font-bold text-xs border border-emerald-500/30 flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-check text-[10px]"></i> Đã Thu
+              </button>
+            ` : `
+              <button onclick="togglePlayerPaid(${p.id})" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-bold text-xs border border-amber-500/30 flex items-center gap-1.5 transition">
+                <i class="fa-regular fa-clock text-[10px]"></i> Chưa Thu
+              </button>
+            `}
+          </div>
+        `;
+        listEl.appendChild(item);
+      });
+    }
+
+    function togglePlayerCheckin(id) {
+      const p = participants.find(x => x.id === id);
+      if (p) {
+        p.isCheckin = !p.isCheckin;
+        calculateBill();
+      }
+    }
+
+    function togglePlayerPaid(id) {
+      const p = participants.find(x => x.id === id);
+      if (p) {
+        p.isPaid = !p.isPaid;
+        playSound('score');
+        calculateBill();
+      }
+    }
+
+    function addParticipantPrompt() {
+      const input = document.getElementById('inputNewPlayerName');
+      if (input) input.value = '';
+      document.getElementById('modalAddPlayer').classList.remove('hidden');
+    }
+
+    function confirmAddPlayer() {
+      const input = document.getElementById('inputNewPlayerName');
+      const name = input ? input.value.trim() : '';
+      if (name) {
+        participants.push({
+          id: Date.now(),
+          name: name,
+          isPaid: false,
+          isCheckin: true
+        });
+        closeModal('modalAddPlayer');
+        playSound('success');
+        showToast(`Đã thêm ${name} vào danh sách tính tiền.`);
+        calculateBill();
+      } else {
+        showToast("Vui lòng nhập tên người chơi!", true);
+      }
+    }
+
+    function generateVietQrModal() {
+      playSound('score');
+      const shareAmount = document.getElementById('perPersonShareDisplay').textContent.replace(/[^\d]/g, '');
+      const parsedAmount = parseInt(shareAmount) || 0;
+      document.getElementById('qrPerPersonAmount').textContent = `${parsedAmount.toLocaleString()} đ`;
+
+      const receiverDetails = document.getElementById('qrReceiverDetails');
+      const receiverName = document.getElementById('qrReceiverName');
+      if (receiverDetails) receiverDetails.textContent = `${bankConfig.bankId} • ${bankConfig.accountNo}`;
+      if (receiverName) receiverName.textContent = bankConfig.accountName;
+
+      const addInfo = getFormattedDateNote();
+      const noteEl = document.getElementById('qrTransferNote');
+      if (noteEl) noteEl.textContent = addInfo;
+
+      const img = document.getElementById('vietQrImg');
+      if (customQrImageBase64) {
+        img.src = customQrImageBase64;
+      } else {
+        const cleanNote = addInfo.replace(/[^\w\s\d]/gi, '');
+        const qrUrl = `https://img.vietqr.io/image/${bankConfig.bankId}-${bankConfig.accountNo}-compact2.png?amount=${parsedAmount}&addInfo=${encodeURIComponent(cleanNote)}&accountName=${encodeURIComponent(bankConfig.accountName)}`;
+        img.src = qrUrl;
+        img.onerror = () => {
+          img.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=VIETQR_${bankConfig.bankId}_${bankConfig.accountNo}_${parsedAmount}`;
+        };
+      }
+
+      document.getElementById('modalVietQr').classList.remove('hidden');
+    }
+
+    function markAllPaid() {
+      participants.forEach(p => p.isPaid = true);
+      playSound('success');
+      showToast("Đã xác nhận tất cả mọi người hoàn tất chuyển khoản!");
+      closeModal('modalVietQr');
+      calculateBill();
+    }
+
+    function copyReminderText() {
+      const share = document.getElementById('perPersonShareDisplay').textContent;
+      const note = getFormattedDateNote();
+      const text = `🏸 Kèo Cầu Lông hoàn tất! Tiền sân + cầu + nước chia đều mỗi bạn là: ${share}.\nNhờ các bạn chuyển khoản vào STK: ${bankConfig.accountNo} (${bankConfig.bankId} - ${bankConfig.accountName})\n👉 Nội dung CK: ${note} - [Tên Bạn]. Cảm ơn cả nhóm! 🔥`;
+
+      const dummy = document.createElement("textarea");
+      document.body.appendChild(dummy);
+      dummy.value = text;
+      dummy.select();
+      document.execCommand('copy');
+      document.body.removeChild(dummy);
+
+      playSound('success');
+      showToast("Đã sao chép tin nhắn kèm ngày tháng! Hãy dán vào nhóm Zalo.");
+    }
+
+    function copySpecificText(elementId, successMsg) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      const text = el.textContent.trim();
+      const dummy = document.createElement("textarea");
+      document.body.appendChild(dummy);
+      dummy.value = text;
+      dummy.select();
+      document.execCommand('copy');
+      document.body.removeChild(dummy);
+      playSound('success');
+      showToast(successMsg || "Đã sao chép vào bộ nhớ tạm!");
+    }
+
+    let badmintonMatch = {
+      mode: 'doubles',
+      targetScore: 21,
+      currentSet: 1,
+      setsWon: { top: 0, bottom: 0 },
+      setHistory: [],
+      score: { top: 0, bottom: 0 },
+      serverSide: 'top',
+      players: {
+        singles: { top: "Nguyễn Văn Tuấn", bottom: "Trần Hoàng Nam" },
+        doubles: { topA: "Tuấn", topB: "Linh", bottomA: "Hoàng", bottomB: "Nam" }
+      },
+      courtPositions: {
+        topRight: "Tuấn",
+        topLeft: "Linh",
+        bottomRight: "Hoàng",
+        bottomLeft: "Nam"
+      },
+      history: []
+    };
+
+    function saveHistorySnapshot() {
+      const snapshot = JSON.stringify({
+        score: { ...badmintonMatch.score },
+        serverSide: badmintonMatch.serverSide,
+        courtPositions: { ...badmintonMatch.courtPositions },
+        currentSet: badmintonMatch.currentSet,
+        setsWon: { ...badmintonMatch.setsWon },
+        setHistory: [...badmintonMatch.setHistory]
+      });
+      badmintonMatch.history.push(snapshot);
+      if (badmintonMatch.history.length > 30) badmintonMatch.history.shift();
+    }
+
+    function setMatchMode(mode) {
+      playSound('score');
+      badmintonMatch.mode = mode;
+
+      const btnDoubles = document.getElementById('btnModeDoubles');
+      const btnSingles = document.getElementById('btnModeSingles');
+
+      if (mode === 'doubles') {
+        btnDoubles.className = "px-3 py-1 rounded-lg text-xs font-bold bg-emerald-500 text-slate-950 transition shadow-sm";
+        btnSingles.className = "px-3 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition";
+        badmintonMatch.courtPositions = {
+          topRight: badmintonMatch.players.doubles.topA,
+          topLeft: badmintonMatch.players.doubles.topB,
+          bottomRight: badmintonMatch.players.doubles.bottomA,
+          bottomLeft: badmintonMatch.players.doubles.bottomB
+        };
+      } else {
+        btnSingles.className = "px-3 py-1 rounded-lg text-xs font-bold bg-emerald-500 text-slate-950 transition shadow-sm";
+        btnDoubles.className = "px-3 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition";
+      }
+
+      resetMatchScore(false);
+      showToast(`Đã chuyển sang chế độ ${mode === 'doubles' ? 'Đánh Đôi (2v2)' : 'Đánh Đơn (1v1)'}`);
+    }
+
+    function changeTargetScore(val) {
+      badmintonMatch.targetScore = parseInt(val) || 21;
+      playSound('score');
+      updateScoreboardUI();
+      showToast(`Điểm kết thúc set: ${badmintonMatch.targetScore} điểm`);
+    }
+
+    function incrementScore(winningSide) {
+      saveHistorySnapshot();
+      playSound('score');
+
+      const isServingSide = (badmintonMatch.serverSide === winningSide);
+      badmintonMatch.score[winningSide] += 1;
+
+      if (badmintonMatch.mode === 'doubles') {
+        if (isServingSide) {
+          if (winningSide === 'top') {
+            const temp = badmintonMatch.courtPositions.topRight;
+            badmintonMatch.courtPositions.topRight = badmintonMatch.courtPositions.topLeft;
+            badmintonMatch.courtPositions.topLeft = temp;
+          } else {
+            const temp = badmintonMatch.courtPositions.bottomRight;
+            badmintonMatch.courtPositions.bottomRight = badmintonMatch.courtPositions.bottomLeft;
+            badmintonMatch.courtPositions.bottomLeft = temp;
+          }
+        } else {
+          badmintonMatch.serverSide = winningSide;
+        }
+      } else {
+        badmintonMatch.serverSide = winningSide;
+      }
+
+      checkSetOrMatchPoint();
+      updateScoreboardUI();
+    }
+
+    function decrementScore(side) {
+      if (badmintonMatch.score[side] <= 0) return;
+      saveHistorySnapshot();
+      badmintonMatch.score[side] -= 1;
+      playSound('score');
+      updateScoreboardUI();
+    }
+
+    function undoScore() {
+      if (badmintonMatch.history.length === 0) {
+        showToast("Không có thao tác nào để hoàn tác!", true);
+        return;
+      }
+      const prev = JSON.parse(badmintonMatch.history.pop());
+      badmintonMatch.score = prev.score;
+      badmintonMatch.serverSide = prev.serverSide;
+      badmintonMatch.courtPositions = prev.courtPositions;
+      badmintonMatch.currentSet = prev.currentSet;
+      badmintonMatch.setsWon = prev.setsWon;
+      badmintonMatch.setHistory = prev.setHistory;
+      playSound('score');
+      showToast("Đã hoàn tác 1 điểm!");
+      updateScoreboardUI();
+    }
+
+    function swapCourtSides() {
+      saveHistorySnapshot();
+      playSound('score');
+
+      const tempScore = badmintonMatch.score.top;
+      badmintonMatch.score.top = badmintonMatch.score.bottom;
+      badmintonMatch.score.bottom = tempScore;
+
+      badmintonMatch.serverSide = badmintonMatch.serverSide === 'top' ? 'bottom' : 'top';
+
+      if (badmintonMatch.mode === 'singles') {
+        const tempPlayer = badmintonMatch.players.singles.top;
+        badmintonMatch.players.singles.top = badmintonMatch.players.singles.bottom;
+        badmintonMatch.players.singles.bottom = tempPlayer;
+      } else {
+        const tempA = badmintonMatch.players.doubles.topA;
+        const tempB = badmintonMatch.players.doubles.topB;
+        badmintonMatch.players.doubles.topA = badmintonMatch.players.doubles.bottomA;
+        badmintonMatch.players.doubles.topB = badmintonMatch.players.doubles.bottomB;
+        badmintonMatch.players.doubles.bottomA = tempA;
+        badmintonMatch.players.doubles.bottomB = tempB;
+
+        const tempPos = { ...badmintonMatch.courtPositions };
+        badmintonMatch.courtPositions.topRight = tempPos.bottomRight;
+        badmintonMatch.courtPositions.topLeft = tempPos.bottomLeft;
+        badmintonMatch.courtPositions.bottomRight = tempPos.topRight;
+        badmintonMatch.courtPositions.bottomLeft = tempPos.topLeft;
+      }
+
+      showToast("Đã đổi bên sân thi đấu!");
+      updateScoreboardUI();
+    }
+
+    function checkSetOrMatchPoint() {
+      const top = badmintonMatch.score.top;
+      const bottom = badmintonMatch.score.bottom;
+      const target = badmintonMatch.targetScore;
+
+      const maxCap = (target === 21) ? 30 : target + 5;
+      const hasWon = (pts, opp) => (pts >= target && pts - opp >= 2) || (pts === maxCap);
+
+      if (hasWon(top, bottom) || hasWon(bottom, top)) {
+        playSound('whistle');
+        const winner = top > bottom ? "Đội A (Trên)" : "Đội B (Dưới)";
+        const winningTeamKey = top > bottom ? 'top' : 'bottom';
+
+        badmintonMatch.setsWon[winningTeamKey] += 1;
+        badmintonMatch.setHistory.push(`Set ${badmintonMatch.currentSet}: ${top}-${bottom}`);
+
+        if (badmintonMatch.setsWon[winningTeamKey] >= 2) {
+          showToast(`🏆 TRẬN ĐẤU KẾT THÚC! ${winner} THẮNG CHUNG CUỘC!`);
+        } else {
+          showToast(`Kết thúc Set ${badmintonMatch.currentSet}! ${winner} thắng (${top}-${bottom}). Bắt đầu Set ${badmintonMatch.currentSet + 1}.`);
+          badmintonMatch.currentSet += 1;
+          badmintonMatch.score.top = 0;
+          badmintonMatch.score.bottom = 0;
+        }
+      }
+    }
+
+    function updateScoreboardUI() {
+      document.getElementById('scoreDisplayTop').textContent = badmintonMatch.score.top;
+      document.getElementById('scoreDisplayBottom').textContent = badmintonMatch.score.bottom;
+      document.getElementById('currentSetNumber').textContent = badmintonMatch.currentSet;
+      document.getElementById('setsWonBadge').textContent = `Set: A ${badmintonMatch.setsWon.top} - ${badmintonMatch.setsWon.bottom} B`;
+
+      if (badmintonMatch.setHistory.length > 0) {
+        document.getElementById('setHistoryList').textContent = badmintonMatch.setHistory.join(' • ');
+      } else {
+        document.getElementById('setHistoryList').textContent = `Đang đánh Set ${badmintonMatch.currentSet}`;
+      }
+
+      const isTopServing = (badmintonMatch.serverSide === 'top');
+      const serverScore = isTopServing ? badmintonMatch.score.top : badmintonMatch.score.bottom;
+      const isScoreEven = (serverScore % 2 === 0);
+
+      const topBadge = document.getElementById('teamTopServeBadge');
+      const bottomBadge = document.getElementById('teamBottomServeBadge');
+      if (isTopServing) {
+        topBadge.classList.remove('hidden');
+        bottomBadge.classList.add('hidden');
+      } else {
+        bottomBadge.classList.remove('hidden');
+        topBadge.classList.add('hidden');
+      }
+
+      let activeServerName = "";
+      let activeReceiverName = "";
+      let serveCourtText = isScoreEven ? "Phải (Chẵn)" : "Trái (Lẻ)";
+
+      if (badmintonMatch.mode === 'doubles') {
+        document.getElementById('teamTopLabel').textContent = "Đội A (Đôi)";
+        document.getElementById('teamBottomLabel').textContent = "Đội B (Đôi)";
+        document.getElementById('teamTopDetailNames').textContent = `${badmintonMatch.players.doubles.topA} & ${badmintonMatch.players.doubles.topB}`;
+        document.getElementById('teamBottomDetailNames').textContent = `${badmintonMatch.players.doubles.bottomA} & ${badmintonMatch.players.doubles.bottomB}`;
+
+        document.getElementById('topPlayerRight').textContent = badmintonMatch.courtPositions.topRight;
+        document.getElementById('topPlayerLeft').textContent = badmintonMatch.courtPositions.topLeft;
+        document.getElementById('bottomPlayerRight').textContent = badmintonMatch.courtPositions.bottomRight;
+        document.getElementById('bottomPlayerLeft').textContent = badmintonMatch.courtPositions.bottomLeft;
+
+        document.getElementById('topIconRight').classList.add('hidden');
+        document.getElementById('topIconLeft').classList.add('hidden');
+        document.getElementById('bottomIconRight').classList.add('hidden');
+        document.getElementById('bottomIconLeft').classList.add('hidden');
+
+        ['topBoxRight', 'topBoxLeft', 'bottomBoxRight', 'bottomBoxLeft'].forEach(id => {
+          document.getElementById(id).classList.remove('ring-2', 'ring-emerald-400', 'ring-sky-400', 'bg-emerald-500/20', 'bg-sky-500/20');
+        });
+
+        if (isTopServing) {
+          if (isScoreEven) {
+            activeServerName = badmintonMatch.courtPositions.topRight;
+            activeReceiverName = badmintonMatch.courtPositions.bottomRight;
+            document.getElementById('topIconRight').classList.remove('hidden');
+            document.getElementById('bottomIconRight').classList.remove('hidden');
+            document.getElementById('topBoxRight').classList.add('ring-2', 'ring-emerald-400', 'bg-emerald-500/20');
+            document.getElementById('bottomBoxRight').classList.add('ring-2', 'ring-sky-400', 'bg-sky-500/20');
+          } else {
+            activeServerName = badmintonMatch.courtPositions.topLeft;
+            activeReceiverName = badmintonMatch.courtPositions.bottomLeft;
+            document.getElementById('topIconLeft').classList.remove('hidden');
+            document.getElementById('bottomIconLeft').classList.remove('hidden');
+            document.getElementById('topBoxLeft').classList.add('ring-2', 'ring-emerald-400', 'bg-emerald-500/20');
+            document.getElementById('bottomBoxLeft').classList.add('ring-2', 'ring-sky-400', 'bg-sky-500/20');
+          }
+        } else {
+          if (isScoreEven) {
+            activeServerName = badmintonMatch.courtPositions.bottomRight;
+            activeReceiverName = badmintonMatch.courtPositions.topRight;
+            document.getElementById('bottomIconRight').classList.remove('hidden');
+            document.getElementById('topIconRight').classList.remove('hidden');
+            document.getElementById('bottomBoxRight').classList.add('ring-2', 'ring-sky-400', 'bg-sky-500/20');
+            document.getElementById('topBoxRight').classList.add('ring-2', 'ring-emerald-400', 'bg-emerald-500/20');
+          } else {
+            activeServerName = badmintonMatch.courtPositions.bottomLeft;
+            activeReceiverName = badmintonMatch.courtPositions.topLeft;
+            document.getElementById('bottomIconLeft').classList.remove('hidden');
+            document.getElementById('topIconLeft').classList.remove('hidden');
+            document.getElementById('bottomBoxLeft').classList.add('ring-2', 'ring-sky-400', 'bg-sky-500/20');
+            document.getElementById('topBoxLeft').classList.add('ring-2', 'ring-emerald-400', 'bg-emerald-500/20');
+          }
+        }
+      } else {
+        document.getElementById('teamTopLabel').textContent = "Tay Vợt A";
+        document.getElementById('teamBottomLabel').textContent = "Tay Vợt B";
+        document.getElementById('teamTopDetailNames').textContent = badmintonMatch.players.singles.top;
+        document.getElementById('teamBottomDetailNames').textContent = badmintonMatch.players.singles.bottom;
+
+        const playerTop = badmintonMatch.players.singles.top;
+        const playerBottom = badmintonMatch.players.singles.bottom;
+
+        document.getElementById('topPlayerRight').textContent = isScoreEven ? playerTop : "";
+        document.getElementById('topPlayerLeft').textContent = !isScoreEven ? playerTop : "";
+        document.getElementById('bottomPlayerRight').textContent = isScoreEven ? playerBottom : "";
+        document.getElementById('bottomPlayerLeft').textContent = !isScoreEven ? playerBottom : "";
+
+        if (isTopServing) {
+          activeServerName = playerTop;
+          activeReceiverName = playerBottom;
+        } else {
+          activeServerName = playerBottom;
+          activeReceiverName = playerTop;
+        }
+      }
+
+      const calloutText = `${activeServerName} Giao cầu ô ${serveCourtText} ➜ ${activeReceiverName} Nhận cầu`;
+      document.getElementById('serviceCalloutText').textContent = calloutText;
+
+      const matchBadge = document.getElementById('pointMatchBadge');
+      const topPts = badmintonMatch.score.top;
+      const btmPts = badmintonMatch.score.bottom;
+      const target = badmintonMatch.targetScore;
+
+      if ((topPts >= target - 1 || btmPts >= target - 1) && Math.abs(topPts - btmPts) >= 1) {
+        matchBadge.classList.remove('hidden');
+        matchBadge.textContent = (badmintonMatch.setsWon.top === 1 || badmintonMatch.setsWon.bottom === 1) ? "MATCH POINT" : "SET POINT";
+      } else if (topPts >= target - 1 && btmPts >= target - 1 && topPts === btmPts) {
+        matchBadge.classList.remove('hidden');
+        matchBadge.textContent = "DEUCE (CÁCH 2)";
+      } else {
+        matchBadge.classList.add('hidden');
+      }
+    }
+
+    function confirmResetMatch() {
+      resetMatchScore(true);
+    }
+
+    function resetMatchScore(notify = true) {
+      badmintonMatch.score = { top: 0, bottom: 0 };
+      badmintonMatch.setsWon = { top: 0, bottom: 0 };
+      badmintonMatch.currentSet = 1;
+      badmintonMatch.setHistory = [];
+      badmintonMatch.serverSide = 'top';
+      badmintonMatch.history = [];
+      playSound('score');
+      if (notify) showToast("Đã đặt lại trận đấu về 0 - 0");
+      updateScoreboardUI();
+    }
+
+    function openEditNamesModal() {
+      const container = document.getElementById('playerInputsContainer');
+      container.innerHTML = '';
+
+      if (badmintonMatch.mode === 'doubles') {
+        container.innerHTML = `
+          <div class="space-y-2">
+            <span class="text-xs font-bold text-emerald-400 block">Đội A (Top):</span>
+            <div class="grid grid-cols-2 gap-2">
+              <input type="text" id="inputTopA" value="${badmintonMatch.players.doubles.topA}" placeholder="Tuyển thủ 1" class="bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-white">
+              <input type="text" id="inputTopB" value="${badmintonMatch.players.doubles.topB}" placeholder="Tuyển thủ 2" class="bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-white">
+            </div>
+          </div>
+          <div class="space-y-2 pt-2 border-t border-slate-800">
+            <span class="text-xs font-bold text-sky-400 block">Đội B (Bottom):</span>
+            <div class="grid grid-cols-2 gap-2">
+              <input type="text" id="inputBottomA" value="${badmintonMatch.players.doubles.bottomA}" placeholder="Tuyển thủ 1" class="bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-white">
+              <input type="text" id="inputBottomB" value="${badmintonMatch.players.doubles.bottomB}" placeholder="Tuyển thủ 2" class="bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-white">
+            </div>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <div>
+            <label class="text-xs font-bold text-emerald-400 block mb-1">Tuyển thủ A (Top):</label>
+            <input type="text" id="inputSinglesTop" value="${badmintonMatch.players.singles.top}" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="text-xs font-bold text-sky-400 block mb-1">Tuyển thủ B (Bottom):</label>
+            <input type="text" id="inputSinglesBottom" value="${badmintonMatch.players.singles.bottom}" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+        `;
+      }
+
+      document.getElementById('modalEditNames').classList.remove('hidden');
+    }
+
+    function savePlayerNames() {
+      if (badmintonMatch.mode === 'doubles') {
+        badmintonMatch.players.doubles.topA = document.getElementById('inputTopA').value.trim() || "Tuấn";
+        badmintonMatch.players.doubles.topB = document.getElementById('inputTopB').value.trim() || "Linh";
+        badmintonMatch.players.doubles.bottomA = document.getElementById('inputBottomA').value.trim() || "Hoàng";
+        badmintonMatch.players.doubles.bottomB = document.getElementById('inputBottomB').value.trim() || "Nam";
+
+        badmintonMatch.courtPositions.topRight = badmintonMatch.players.doubles.topA;
+        badmintonMatch.courtPositions.topLeft = badmintonMatch.players.doubles.topB;
+        badmintonMatch.courtPositions.bottomRight = badmintonMatch.players.doubles.bottomA;
+        badmintonMatch.courtPositions.bottomLeft = badmintonMatch.players.doubles.bottomB;
+      } else {
+        badmintonMatch.players.singles.top = document.getElementById('inputSinglesTop').value.trim() || "Tuyển thủ A";
+        badmintonMatch.players.singles.bottom = document.getElementById('inputSinglesBottom').value.trim() || "Tuyển thủ B";
+      }
+
+      closeModal('modalEditNames');
+      playSound('success');
+      showToast("Đã cập nhật danh sách tuyển thủ!");
+      updateScoreboardUI();
+    }
+
+    function openEndMatchModal() {
+      playSound('success');
+      showToast("Đã chốt kết quả trận đấu!");
+    }
+
+    let matchesData = [];
+    const courtSlots = [];
+    let selectedCourtSlots = [];
+
+    function renderMatches() {}
+    function filterMatches() {}
+    function joinMatch() {}
+    function renderCourts() {}
+    function toggleCourtSlot() {}
+    function updateBookingSummary() {}
+    function handleCourtBooking() {}
+
+    function openTrustModal() {
+      playSound('score');
+      document.getElementById('modalTrustScore').classList.remove('hidden');
+    }
+
+    function openCreateMatchModal() {
+      playSound('score');
+      document.getElementById('modalCreateMatch').classList.remove('hidden');
+    }
+
+    function closeModal(modalId) {
+      const el = document.getElementById(modalId);
+      if (el) el.classList.add('hidden');
+    }
+
+    function submitNewMatch() {
+      closeModal('modalCreateMatch');
+      showToast("Đã lưu thông tin!");
+    }
+
+    function showToast(msg, isError = false) {
+      const toast = document.getElementById('toastNotification');
+      const toastMsg = document.getElementById('toastMsg');
+      if (!toast || !toastMsg) return;
+      toastMsg.textContent = msg;
+
+      if (isError) {
+        toast.classList.remove('bg-emerald-500', 'text-slate-950');
+        toast.classList.add('bg-red-500', 'text-white');
+      } else {
+        toast.classList.remove('bg-red-500', 'text-white');
+        toast.classList.add('bg-emerald-500', 'text-slate-950');
+      }
+
+      toast.classList.remove('opacity-0', '-translate-y-3', 'pointer-events-none');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', '-translate-y-3', 'pointer-events-none');
+        toast.classList.remove('opacity-100', 'translate-y-0');
+      }, 2600);
+    }
+
+    // App Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      loadBankConfig();
+      calculateBill();
+      renderUserTabView();
+      updateScoreboardUI();
+      switchTab('split');
+    });
+</script>
+</body>
+</html>
